@@ -59,6 +59,8 @@ class ReminderViewController : UICollectionViewController {
             cell.contentConfiguration = headrConfiguration(for: cell, with: title)
         case (.view, _):
             cell.contentConfiguration = defaultConfiguration(for: cell, ar: row)
+        case (.title, .editText(let title)):
+            cell.contentConfiguration = titleConfiguration(for: cell, with: title)
         default:
             fatalError("Unexpected combination of section and row.")
         }
@@ -73,6 +75,7 @@ class ReminderViewController : UICollectionViewController {
     private func updateSnapshotForEdition() {
         var snapshot = Snapshot()
         snapshot.appendSections([.title, .data, .notes])
+        snapshot.appendItems([.header(Section.title.name), .editText(reminder.title)], toSection: .title)
         snapshot.appendItems([.header(Section.title.name)], toSection: .title)
         snapshot.appendItems([.header(Section.data.name)], toSection: .data)
         snapshot.appendItems([.header(Section.notes.name)], toSection: .notes)
@@ -92,15 +95,5 @@ class ReminderViewController : UICollectionViewController {
             fatalError("Unable to find matching section")
         }
         return section
-    }
-    
-    func text(for row: Row) -> String? {
-        switch row {
-        case .viewData: return reminder.dueDate.dayText
-        case .viewNotes: return reminder.notes
-        case .viewTime: return reminder.dueDate.formatted(date: .omitted, time: .shortened)
-        case .viewTitle: return reminder.title
-        default: return nil
-        }
     }
 }
